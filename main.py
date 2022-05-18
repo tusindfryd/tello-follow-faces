@@ -26,8 +26,12 @@ while True:
             counter = 1
         else:
             counter = counter + 1
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        if len(faces) > 0:
+            face = sorted(faces, key=lambda face: face[2] * face[3])[-1]
+            for (x, y, w, h) in [face]:
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
         cv2.imshow('tello', frame)
     if cv2.waitKey(1) != -1:
         break
