@@ -5,7 +5,6 @@ from datetime import datetime
 from threading import Thread
 import os
 
-from sympy import N
 
 flying = True
 drone = Tello()
@@ -28,7 +27,6 @@ def fly():
     fly_instructions = []
     done_instructions = []
     while flying:
-        sleep(0.1)
         if instructions and instructions[-1] not in fly_instructions:
             fly_instructions.append(instructions[-1])
         # print(f"Done: {done_instructions}")
@@ -85,7 +83,7 @@ try:
     while flying:
         grabbed, frame = capture.read()
         if grabbed:
-            if counter % 10 == 0:  # every ten frames: detect faces
+            if counter % 10 == 0:  # every ten cycles: detect faces
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 faces = face_cascade.detectMultiScale(gray, 1.1, 4)
                 if len(faces) > 0:
@@ -95,7 +93,7 @@ try:
                 else:
                     face = [0, 0, 0, 0]
 
-            if counter % 100 == 0:  # every hundred frames: move
+            if counter % 100 == 0:  # every hundred cycles: move
                 if not all(face):
                     instructions.append(["cw45", datetime.now()])
                 if all(face):
@@ -126,7 +124,7 @@ try:
             cv2.circle(frame, (int(frame_width / 2), int(frame_height / 2)),
                        radius=2, color=(0, 255, 0), thickness=1)
             for (x, y, w, h) in [face]:
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 cv2.circle(frame, (int(x + w / 2), int(y + h / 2)),
                            radius=2, color=(0, 0, 255), thickness=1)
 
