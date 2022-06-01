@@ -63,10 +63,6 @@ def fly():
                         drone.move_up(20)
                 sleep(5)
                 done_instructions.append(instruction)
-        if len(done_instructions) == 15:
-            print("3 instructions done - landing...")
-            flying = False
-            drone.land()
         fly_instructions = clear_old_instructions(fly_instructions)
         done_instructions = clear_old_instructions(done_instructions, 20)
 
