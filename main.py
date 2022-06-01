@@ -5,6 +5,8 @@ from datetime import datetime
 from threading import Thread
 import os
 
+from sympy import N
+
 flying = True
 drone = Tello()
 instructions = []
@@ -35,21 +37,33 @@ def fly():
             if instruction not in done_instructions:
                 direction = instruction[0]
                 match direction:
-                    case "right":
-                        print("Turning right...")
+                    case "cw15":
+                        print("Turning right 15 degrees...")
                         drone.rotate_clockwise(15)
-                    case "left":
-                        print("Turning left...")
+                    case "ccw15":
+                        print("Turning left 15 degrees...")
                         drone.rotate_counter_clockwise(15)
+                    case "cw45":
+                        print("Turning right 45 degrees...")
+                        drone.rotate_clockwise(45)
+                    case "ccw15":
+                        print("Turning left 45 degrees...")
+                        drone.rotate_counter_clockwise(45)
                     case "forward":
                         print("Moving forward...")
                         drone.move_forward(20)
                     case "backward":
                         print("Moving backward...")
                         drone.move_back(20)
+                    case "down":
+                        print("Moving down...")
+                        drone.move_down(20)
+                    case "up":
+                        print("Moving up...")
+                        drone.move_up(20)
                 sleep(5)
                 done_instructions.append(instruction)
-        if len(done_instructions) == 3:
+        if len(done_instructions) == 15:
             print("3 instructions done - landing...")
             flying = False
             drone.land()
@@ -86,6 +100,8 @@ try:
                     face = [0, 0, 0, 0]
 
             if counter % 100 == 0:  # every hundred frames: move
+                if not all(face):
+                    instructions.append(["cw45", datetime.now()])
                 if all(face):
                     (x, y, w, h) = face
                     face_size = w * h
@@ -95,11 +111,16 @@ try:
                         instructions.append(["forward", datetime.now()])
                     elif face_size > 22000:
                         instructions.append(["backward", datetime.now()])
-                    if abs(horizontal_dist) > 30:
+                    if abs(horizontal_dist) > 100:
                         if horizontal_dist < 0:
-                            instructions.append(["right", datetime.now()])
+                            instructions.append(["cw15", datetime.now()])
                         elif horizontal_dist > 0:
-                            instructions.append(["left", datetime.now()])
+                            instructions.append(["ccw15", datetime.now()])
+                    if abs(vertical_dist) > 100:
+                        if vertical_dist > 0:
+                            instructions.append(["up", datetime.now()])
+                        elif vertical_dist < 0:
+                            instructions.append(["down", datetime.now()])
                         # print(f"All instructions: {instructions}")
                 counter = 1
 
